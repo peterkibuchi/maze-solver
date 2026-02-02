@@ -2,7 +2,7 @@ from tkinter import BOTH, Canvas, Tk
 
 
 class Point():
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: int | float, y: int | float):
         # The value x=0 is the left of the screen, y=0 is the top of the screen
         self.x = x
         self.y = y

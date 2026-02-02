@@ -12,6 +12,8 @@ def main():
     cell1.draw(100, 100, 200, 200)
     cell2.draw(400, 400, 500, 500)
 
+    cell1.draw_move(cell2)
+
     win.wait_for_close()
 
 

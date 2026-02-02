@@ -8,13 +8,13 @@ class Cell():
         self.has_top_wall = True
         self.has_bottom_wall = True
 
-        self.__x1 = -1
-        self.__y1 = -1
-        self.__x2 = -1
-        self.__y2 = -1
+        self.__x1: int | float = -1
+        self.__y1: int | float = -1
+        self.__x2: int | float = -1
+        self.__y2: int | float = -1
         self.__win = window
 
-    def draw(self, x1, y1, x2, y2):
+    def draw(self, x1: int | float, y1: int | float, x2: int | float, y2: int | float):
         self.__x1 = x1
         self.__y1 = y1
         self.__x2 = x2
@@ -33,3 +33,18 @@ class Cell():
             self.__win.draw_line(Line(top_left, bottom_left))
         if self.has_right_wall:
             self.__win.draw_line(Line(top_right, bottom_right))
+
+    def draw_move(self, to_cell, undo: bool = False):
+        line_color = "gray" if undo else "red"
+
+        self_center = Point(
+            ((self.__x1 + self.__x2) / 2),
+            ((self.__y1 + self.__y2) / 2),
+        )
+
+        other_center = Point(
+            ((to_cell.__x1 + to_cell.__x2) / 2),
+            ((to_cell.__y1 + to_cell.__y2) / 2),
+        )
+
+        self.__win.draw_line(Line(self_center, other_center), line_color)
