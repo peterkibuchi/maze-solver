@@ -1,15 +1,17 @@
-from graphics import Window, Line, Point
+from cell import Cell
+from graphics import Line, Point, Window
 
 
 def main():
     print("Hello from maze-solver!")
     win = Window(800, 600)
-    point1, point2 = Point(100, 100), Point(500, 500)
-    point3, point4 = Point(100, 500), Point(500, 100)
-    line1 = Line(point1, point2)
-    line2 = Line(point3, point4)
-    win.draw_line(line1, "black")
-    win.draw_line(line2, "black")
+
+    cell1 = Cell(win)
+    cell2 = Cell(win)
+
+    cell1.draw(100, 100, 200, 200)
+    cell2.draw(400, 400, 500, 500)
+
     win.wait_for_close()
 
 
