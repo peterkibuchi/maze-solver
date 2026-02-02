@@ -4,9 +4,16 @@ from graphics import Line, Point, Window
 
 def main():
     print("Hello from maze-solver!")
-    win = Window(800, 600)
+    screen_x, screen_y = 1000, 1000
+    win = Window(screen_x, screen_y)
 
-    maze = Maze(100, 100, 5, 10, 50, 50, win)
+    margin = 50
+    num_rows, num_cols = 12, 12
+    cell_size_x = (screen_x - 2 * margin) / num_cols
+    cell_size_y = (screen_y - 2 * margin) / num_rows
+
+    maze = Maze(margin, margin, num_rows, num_cols,
+                cell_size_x, cell_size_y, win)
 
     win.wait_for_close()
 
