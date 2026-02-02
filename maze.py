@@ -24,6 +24,7 @@ class Maze():
         self.__win = win
 
         self.__create_cells()
+        self.__break_entrance_and_exit()
 
     def __create_cells(self):
         # The top level list contains the columns, the inner lists the rows
@@ -53,3 +54,12 @@ class Maze():
             return
         self.__win.redraw()
         time.sleep(0.05)
+
+    def __break_entrance_and_exit(self):
+        self.__cells[0][0].has_top_wall = False
+        self.__draw_cell(0, 0)
+
+        last_row_idx = self.__num_rows - 1
+        last_col_idx = self.__num_cols - 1
+        self.__cells[last_col_idx][last_row_idx].has_bottom_wall = False
+        self.__draw_cell(last_col_idx, last_row_idx)

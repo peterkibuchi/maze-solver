@@ -30,12 +30,23 @@ class Cell():
 
         if self.has_top_wall:
             self.__win.draw_line(Line(top_left, top_right))
+        else:
+            self.__win.draw_line(Line(top_left, top_right), "#d9d9d9")
+
         if self.has_bottom_wall:
             self.__win.draw_line(Line(bottom_left, bottom_right))
+        else:
+            self.__win.draw_line(Line(bottom_left, bottom_right), "#d9d9d9")
+
         if self.has_left_wall:
             self.__win.draw_line(Line(top_left, bottom_left))
+        else:
+            self.__win.draw_line(Line(top_left, bottom_left), "#d9d9d9")
+
         if self.has_right_wall:
             self.__win.draw_line(Line(top_right, bottom_right))
+        else:
+            self.__win.draw_line(Line(top_right, bottom_right), "#d9d9d9")
 
     def draw_move(self, to_cell, undo: bool = False):
         if self.__win is None:

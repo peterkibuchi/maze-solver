@@ -99,6 +99,16 @@ class TestMaze(unittest.TestCase):
         for col in m._Maze__cells:
             self.assertEqual(len(col), num_rows)
 
+    def test_maze_break_entrance_and_exit(self):
+        """Entrance (top of first cell) and exit (bottom of last cell) should be open."""
+        m = Maze(0, 0, 5, 5, 10, 10)
+        m._Maze__break_entrance_and_exit()
+
+        # Entrance: top wall of cell[0][0] should be removed
+        self.assertFalse(m._Maze__cells[0][0].has_top_wall)
+        # Exit: bottom wall of cell[-1][-1] should be removed
+        self.assertFalse(m._Maze__cells[-1][-1].has_bottom_wall)
+
 
 if __name__ == "__main__":
     unittest.main()
