@@ -41,10 +41,10 @@ class TestMaze(unittest.TestCase):
         """Maze should create correct number of columns and rows."""
         num_cols = 12
         num_rows = 10
-        m1 = Maze(0, 0, num_rows, num_cols, 10, 10)
+        m = Maze(0, 0, num_rows, num_cols, 10, 10)
 
-        self.assertEqual(len(m1._Maze__cells), num_cols)
-        self.assertEqual(len(m1._Maze__cells[0]), num_rows)
+        self.assertEqual(len(m._Maze__cells), num_cols)
+        self.assertEqual(len(m._Maze__cells[0]), num_rows)
 
     def test_maze_create_cells_small(self):
         """Maze should work with minimal dimensions."""
@@ -83,11 +83,11 @@ class TestMaze(unittest.TestCase):
     def test_maze_cells_independent(self):
         """Each cell should be an independent object."""
         m = Maze(0, 0, 3, 3, 10, 10)
-        m._Maze__cells[0][0].has_left_wall = False
 
-        # Other cells should not be affected
-        self.assertTrue(m._Maze__cells[0][1].has_left_wall)
-        self.assertTrue(m._Maze__cells[1][0].has_left_wall)
+        # Verify cells are distinct objects, not references to the same object
+        self.assertIsNot(m._Maze__cells[0][0], m._Maze__cells[0][1])
+        self.assertIsNot(m._Maze__cells[0][0], m._Maze__cells[1][0])
+        self.assertIsNot(m._Maze__cells[1][0], m._Maze__cells[1][1])
 
     def test_maze_rectangular_dimensions(self):
         """Maze should work with different row and column counts."""
@@ -102,12 +102,76 @@ class TestMaze(unittest.TestCase):
     def test_maze_break_entrance_and_exit(self):
         """Entrance (top of first cell) and exit (bottom of last cell) should be open."""
         m = Maze(0, 0, 5, 5, 10, 10)
-        m._Maze__break_entrance_and_exit()
 
         # Entrance: top wall of cell[0][0] should be removed
         self.assertFalse(m._Maze__cells[0][0].has_top_wall)
         # Exit: bottom wall of cell[-1][-1] should be removed
         self.assertFalse(m._Maze__cells[-1][-1].has_bottom_wall)
+
+    def test_maze_generation_visits_all_cells(self):
+        """All cells should be marked as visited after maze generation."""
+        m = Maze(0, 0, 5, 5, 10, 10)
+
+        for col in m._Maze__cells:
+            for cell in col:
+                self.assertTrue(cell.visited)
+
+    def test_maze_break_walls_deterministic_with_seed(self):
+        """Same seed should produce identical mazes."""
+        m1 = Maze(0, 0, 5, 5, 10, 10, seed=42)
+        m2 = Maze(0, 0, 5, 5, 10, 10, seed=42)
+
+        for i in range(5):
+            for j in range(5):
+                c1 = m1._Maze__cells[i][j]
+                c2 = m2._Maze__cells[i][j]
+                self.assertEqual(c1.has_left_wall, c2.has_left_wall)
+                self.assertEqual(c1.has_right_wall, c2.has_right_wall)
+                self.assertEqual(c1.has_top_wall, c2.has_top_wall)
+                self.assertEqual(c1.has_bottom_wall, c2.has_bottom_wall)
+
+    def test_maze_break_walls_different_seeds_different_mazes(self):
+        """Different seeds should produce different mazes."""
+        m1 = Maze(0, 0, 5, 5, 10, 10, seed=42)
+        m2 = Maze(0, 0, 5, 5, 10, 10, seed=99)
+
+        differences = 0
+        for i in range(5):
+            for j in range(5):
+                c1 = m1._Maze__cells[i][j]
+                c2 = m2._Maze__cells[i][j]
+                if c1.has_left_wall != c2.has_left_wall:
+                    differences += 1
+                if c1.has_right_wall != c2.has_right_wall:
+                    differences += 1
+
+        self.assertGreater(differences, 0)
+
+    def test_maze_break_walls_consistent_between_neighbors(self):
+        """If cell A has no right wall, cell B (to the right) should have no left wall."""
+        m = Maze(0, 0, 5, 5, 10, 10, seed=42)
+
+        for i in range(5):
+            for j in range(5):
+                cell = m._Maze__cells[i][j]
+
+                # Check horizontal consistency
+                if i < 4:
+                    right_neighbor = m._Maze__cells[i + 1][j]
+                    self.assertEqual(
+                        cell.has_right_wall,
+                        right_neighbor.has_left_wall,
+                        f"Wall mismatch between ({i},{j}) and ({i+1},{j})"
+                    )
+
+                # Check vertical consistency
+                if j < 4:
+                    bottom_neighbor = m._Maze__cells[i][j + 1]
+                    self.assertEqual(
+                        cell.has_bottom_wall,
+                        bottom_neighbor.has_top_wall,
+                        f"Wall mismatch between ({i},{j}) and ({i},{j+1})"
+                    )
 
 
 if __name__ == "__main__":

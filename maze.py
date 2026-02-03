@@ -1,6 +1,7 @@
+import random
+import time
 from cell import Cell
 from graphics import Window
-import time
 
 
 class Maze():
@@ -12,7 +13,8 @@ class Maze():
             num_cols: int,
             cell_size_x: int | float,
             cell_size_y: int | float,
-            win: Window | None = None
+            win: Window | None = None,
+            seed: int | None = None
     ):
         self.__x1 = x1
         self.__y1 = y1
@@ -23,8 +25,12 @@ class Maze():
         self.__cells: list[list[Cell]] = []
         self.__win = win
 
+        if seed:
+            random.seed(seed)
+
         self.__create_cells()
         self.__break_entrance_and_exit()
+        self.__break_walls_r(0, 0)
 
     def __create_cells(self):
         # The top level list contains the columns, the inner lists the rows
@@ -63,3 +69,54 @@ class Maze():
         last_col_idx = self.__num_cols - 1
         self.__cells[last_col_idx][last_row_idx].has_bottom_wall = False
         self.__draw_cell(last_col_idx, last_row_idx)
+
+    def __break_walls_r(self, i: int, j: int):
+        self.__cells[i][j].visited = True
+
+        while True:
+            adjacent_cells = [
+                (i-1, j),  # top_cell_idx
+                (i+1, j),  # bottom_cell_idx
+                (i, j-1),  # left_cell_idx
+                (i, j+1)  # right_cell_idx
+            ]
+
+            def is_index_valid(index, num_items): return 0 <= index < num_items
+            viable_cells = [
+                cell for cell in adjacent_cells
+                if is_index_valid(cell[0], self.__num_cols) and is_index_valid(cell[1], self.__num_rows)
+            ]
+
+            possible_moves: list[tuple[int, int]] = []
+            for col, row in viable_cells:
+                if not self.__cells[col][row].visited:
+                    possible_moves.append((col, row))
+
+            # if there is nowhere to go from here, break out
+            if len(possible_moves) == 0:
+                self.__draw_cell(i, j)
+                return
+
+            # randomly choose the next direction to go
+            next_cell_i, next_cell_j = random.choice(possible_moves)
+            next_cell = self.__cells[next_cell_i][next_cell_j]
+
+            # break walls between this cell and the next cell
+            if next_cell_i == i - 1 and next_cell_j == j:  # left
+                self.__cells[i][j].has_left_wall = False
+                next_cell.has_right_wall = False
+
+            elif next_cell_i == i + 1 and next_cell_j == j:  # right
+                self.__cells[i][j].has_right_wall = False
+                next_cell.has_left_wall = False
+
+            elif next_cell_i == i and next_cell_j == j - 1:  # above
+                self.__cells[i][j].has_top_wall = False
+                next_cell.has_bottom_wall = False
+
+            elif next_cell_i == i and next_cell_j == j + 1:  # below
+                self.__cells[i][j].has_bottom_wall = False
+                next_cell.has_top_wall = False
+
+            # recursively visit the next cell
+            self.__break_walls_r(next_cell_i, next_cell_j)
