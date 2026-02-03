@@ -108,13 +108,30 @@ class TestMaze(unittest.TestCase):
         # Exit: bottom wall of cell[-1][-1] should be removed
         self.assertFalse(m._Maze__cells[-1][-1].has_bottom_wall)
 
-    def test_maze_generation_visits_all_cells(self):
-        """All cells should be marked as visited after maze generation."""
+    def test_maze_reset_cells_visited(self):
+        """All cells should have visited=False after maze generation completes."""
         m = Maze(0, 0, 5, 5, 10, 10)
 
         for col in m._Maze__cells:
             for cell in col:
-                self.assertTrue(cell.visited)
+                self.assertFalse(cell.visited)
+
+    def test_maze_reset_cells_visited_clears_all(self):
+        """__reset_cells_visited should set visited=False on all cells."""
+        m = Maze(0, 0, 3, 3, 10, 10)
+
+        # Manually mark all cells as visited
+        for col in m._Maze__cells:
+            for cell in col:
+                cell.visited = True
+
+        # Call reset
+        m._Maze__reset_cells_visited()
+
+        # Verify all cells are now unvisited
+        for col in m._Maze__cells:
+            for cell in col:
+                self.assertFalse(cell.visited)
 
     def test_maze_break_walls_deterministic_with_seed(self):
         """Same seed should produce identical mazes."""

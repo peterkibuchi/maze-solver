@@ -31,6 +31,7 @@ class Maze():
         self.__create_cells()
         self.__break_entrance_and_exit()
         self.__break_walls_r(0, 0)
+        self.__reset_cells_visited()
 
     def __create_cells(self):
         # The top level list contains the columns, the inner lists the rows
@@ -120,3 +121,8 @@ class Maze():
 
             # recursively visit the next cell
             self.__break_walls_r(next_cell_i, next_cell_j)
+
+    def __reset_cells_visited(self):
+        for c in range(self.__num_cols):
+            for r in range(self.__num_rows):
+                self.__cells[c][r].visited = False
