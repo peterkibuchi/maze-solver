@@ -190,6 +190,52 @@ class TestMaze(unittest.TestCase):
                         f"Wall mismatch between ({i},{j}) and ({i},{j+1})"
                     )
 
+    def test_maze_solve_returns_true(self):
+        """solve() should return True for a solvable generated maze."""
+        m = Maze(0, 0, 5, 5, 10, 10, seed=42)
+        self.assertTrue(m.solve())
+
+    def test_maze_solve_1x1(self):
+        """solve() should return True for trivial 1x1 maze."""
+        m = Maze(0, 0, 1, 1, 10, 10)
+        self.assertTrue(m.solve())
+
+    def test_maze_solve_marks_start_visited(self):
+        """solve() should mark the start cell as visited."""
+        m = Maze(0, 0, 5, 5, 10, 10, seed=42)
+        m.solve()
+        self.assertTrue(m._Maze__cells[0][0].visited)
+
+    def test_maze_solve_marks_exit_visited(self):
+        """solve() should mark the exit cell as visited."""
+        m = Maze(0, 0, 5, 5, 10, 10, seed=42)
+        m.solve()
+        self.assertTrue(m._Maze__cells[-1][-1].visited)
+
+    def test_maze_solve_various_sizes(self):
+        """solve() should work for different maze dimensions."""
+        test_cases = [(3, 3), (5, 10), (10, 5), (7, 7)]
+        for rows, cols in test_cases:
+            with self.subTest(rows=rows, cols=cols):
+                m = Maze(0, 0, rows, cols, 10, 10, seed=42)
+                self.assertTrue(m.solve())
+
+    def test_maze_solve_deterministic_with_seed(self):
+        """Same seed should produce same solve path (same cells visited)."""
+        m1 = Maze(0, 0, 5, 5, 10, 10, seed=42)
+        m2 = Maze(0, 0, 5, 5, 10, 10, seed=42)
+
+        m1.solve()
+        m2.solve()
+
+        for i in range(5):
+            for j in range(5):
+                self.assertEqual(
+                    m1._Maze__cells[i][j].visited,
+                    m2._Maze__cells[i][j].visited,
+                    f"Visited mismatch at ({i},{j})"
+                )
+
 
 if __name__ == "__main__":
     unittest.main()
