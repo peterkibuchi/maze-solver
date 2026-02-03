@@ -1,4 +1,4 @@
-from tkinter import BOTH, Canvas, Tk
+from tkinter import Canvas, Tk
 
 
 class Point():

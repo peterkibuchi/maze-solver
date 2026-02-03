@@ -1,6 +1,6 @@
 import sys
 from maze import Maze
-from graphics import Line, Point, Window
+from graphics import Window
 
 
 def main():
