@@ -4,6 +4,8 @@ A visual maze generator and solver built with `tkinter`. The program generates a
 
 You can use this as a learning tool for pathfinding algorithms, recursion, and GUI programming in Python.
 
+![maze-solver](maze-solver.gif)
+
 ## Features
 
 - Random maze generation on a grid
